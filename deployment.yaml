@@ -11,7 +11,7 @@ spec:
     rollingUpdate:
       maxSurge: 20%
       maxUnavailable: 20%
-      type: RollingUpdate
+    type: RollingUpdate
   template:
     metadata:
       name: final-pod
