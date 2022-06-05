@@ -77,7 +77,7 @@ Resources:
         MinSize: !Ref MinSize
         DesiredSize: !Ref DesiredSize
         MaxSize: !Ref MaxSize
-      ClusterName: !Sub ${EnvironmentName}-EKSCluster
+      ClusterName: FinalProjectEKS
       Subnets: !Split
         - "|"
         - Fn::ImportValue:
