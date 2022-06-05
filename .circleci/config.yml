@@ -114,12 +114,24 @@ jobs:
             kubectl get deployments
             kubectl get services
 
+  clean-up:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          name: Delete stacks
+          command: |
+            aws cloudformation delete-stack --stack-name "network-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}"
+
 workflows:
   default:
     jobs:
       - do-lint
-    # - deploy-infrastructure
-    #     requires: [do-lint]
+      - deploy-infrastructure
+          requires: [do-lint]
     # - deploy-docker
     # - deploy-cluster
     #     requires: [deploy-infrastructure, deploy-docker]
