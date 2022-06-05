@@ -36,37 +36,37 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Ensure network exists
-        command: |
-          aws cloudformation deploy \
-            --template-file cloudformation/network.yml \
-            --tags project=final \
-            --stack-name "network-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides file://cloudformation/common-params.json \
-            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-            --region us-east-1
+          name: Ensure network exists
+          command: |
+            aws cloudformation deploy \
+              --template-file cloudformation/network.yml \
+              --tags project=final \
+              --stack-name "network-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides file://cloudformation/common-params.json \
+              --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+              --region us-east-1
 
       - run:      
-        name: Ensure EKS cluster exists
-        command: |
-          aws cloudformation deploy \
-            --template-file cloudformation/custer.yml \
-            --tags project=final \
-            --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides file://cloudformation/eks-params.json \
-            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-            --region us-east-1
+          name: Ensure EKS cluster exists
+          command: |
+            aws cloudformation deploy \
+              --template-file cloudformation/custer.yml \
+              --tags project=final \
+              --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides file://cloudformation/eks-params.json \
+              --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+              --region us-east-1
 
       - run:      
-        name: Ensure EKS node group exists
-        command: |
-          aws cloudformation deploy \
-            --template-file cloudformation/nodes.yml \
-            --tags project=final \
-            --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides file://cloudformation/eks-node.json \
-            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-            --region us-east-1            
+          name: Ensure EKS node group exists
+          command: |
+            aws cloudformation deploy \
+              --template-file cloudformation/nodes.yml \
+              --tags project=final \
+              --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides file://cloudformation/eks-node.json \
+              --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+              --region us-east-1            
 
   deploy-docker:
     docker:
