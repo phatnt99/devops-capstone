@@ -184,15 +184,3 @@ workflows:
   default:
     jobs:
       - do-lint
-      - deploy-infrastructure:
-          requires: [do-lint]
-      - deploy-docker-v1
-      - deploy-cluster:
-          requires: [deploy-infrastructure]
-      - deploy-docker-v2:
-          requires: [deploy-cluster]
-      - continue-rolling:
-          type: approval
-          requires: [deploy-docker-v2]     
-      - rolling-update:
-          requires: [continue-rolling]
