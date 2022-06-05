@@ -130,7 +130,7 @@ workflows:
   default:
     jobs:
       - do-lint
-      - deploy-infrastructure
+      - deploy-infrastructure:
           requires: [do-lint]
     # - deploy-docker
     # - deploy-cluster
