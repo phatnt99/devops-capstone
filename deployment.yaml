@@ -16,7 +16,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      name: final-project
+      labels: 
+        app: final-project
     spec:
       containers:
         - name: finalproject 
