@@ -23,3 +23,6 @@ I deployed the cluster with the v1 application first then updated the docker ima
 All screenshots are attached in images folder.
 
 Thank you Udacity!
+
+# Demo
+Load balancer DNS: http://af363c2f60f854217a2b065b7d406b9c-2076475951.us-east-1.elb.amazonaws.com/
