@@ -44,8 +44,6 @@ jobs:
               --stack-name "network-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides file://cloudformation/common-params.json \
               --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-              --region us-east-1
-
       - run:      
           name: Ensure EKS cluster exists
           command: |
@@ -55,7 +53,6 @@ jobs:
               --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides file://cloudformation/eks-params.json \
               --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-              --region us-east-1
 
       - run:      
           name: Ensure EKS node group exists
