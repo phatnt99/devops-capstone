@@ -46,6 +46,7 @@ jobs:
               --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
       - run:      
           name: Ensure EKS cluster exists
+          no_output_timeout: 30m
           command: |
             aws cloudformation deploy \
               --template-file cloudformation/cluster.yml \
@@ -128,6 +129,6 @@ workflows:
       - do-lint
       - deploy-infrastructure:
           requires: [do-lint]
-    # - deploy-docker
-    # - deploy-cluster
-    #     requires: [deploy-infrastructure, deploy-docker]
+      - deploy-docker
+      - deploy-cluster
+          requires: [deploy-infrastructure, deploy-docker]
