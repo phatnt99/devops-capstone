@@ -183,7 +183,7 @@ workflows:
       - deploy-docker-v1
       - deploy-cluster:
           requires: [deploy-docker-v1]
-      - deploy-docker-v2
+      - deploy-docker-v2:
           requires: [deploy-cluster]
       - rolling-update:
           type: approval
