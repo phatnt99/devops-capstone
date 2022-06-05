@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: finalproject 
-          image: phatryo99/finalproject
+          image: phatryo99/finalproject:v1
           imagePullPolicy: Always
           ports:
             - containerPort: 80
