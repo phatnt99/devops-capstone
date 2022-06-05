@@ -21,22 +21,22 @@ Parameters:
 
   DiskSize:
     Description: DiskSize
-    Type: String  
+    Type: Number  
     Default: 20    
 
   MinSize:
     Description: MinSize
-    Type: String  
+    Type: Number  
     Default: 2  
 
   DesiredSize:
     Description: DesiredSize
-    Type: String  
+    Type: Number  
     Default: 2  
 
   MaxSize:
     Description: MaxSize
-    Type: String  
+    Type: Number  
     Default: 2    
 
 Resources:

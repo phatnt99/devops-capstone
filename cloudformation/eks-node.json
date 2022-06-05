@@ -17,18 +17,18 @@
     },
     {
         "ParameterKey": "DiskSize",
-        "ParameterValue": 20
+        "ParameterValue": "20"
     },
     {
         "ParameterKey": "MinSize",
-        "ParameterValue": 2
+        "ParameterValue": "2"
     },
     {
         "ParameterKey": "DesiredSize",
-        "ParameterValue": 2
+        "ParameterValue": "2"
     },
     {
         "ParameterKey": "MaxSize",
-        "ParameterValue": 2
+        "ParameterValue": "2"
     }
 ]
