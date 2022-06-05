@@ -65,7 +65,7 @@ jobs:
               --parameter-overrides file://cloudformation/eks-node.json \
               --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"       
 
-  deploy-docker:
+  deploy-docker-v1:
     docker:
       - image: docker:17.05.0-ce-git
     working_directory: ~/repo  
@@ -77,9 +77,9 @@ jobs:
           command: |
             export DOCKER_PATH=phatryo99/finalproject
             export PROJECT_NAME=finalproject
-            docker build --tag=$PROJECT_NAME .
+            docker build --tag=$PROJECT_NAME app-v1\.
             docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
-            docker tag $PROJECT_NAME $DOCKER_PATH
+            docker tag $PROJECT_NAME $DOCKER_PATH:v1
             docker push $DOCKER_PATH
 
   deploy-cluster:
@@ -116,6 +116,55 @@ jobs:
             ~/.local/bin/kubectl get nodes
             ~/.local/bin/kubectl get pods
 
+  deploy-docker-v2:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: ~/repo  
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build & Push Docker image
+          command: |
+            export DOCKER_PATH=phatryo99/finalproject
+            export PROJECT_NAME=finalproject
+            docker build --tag=$PROJECT_NAME app-v2\.
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
+            docker tag $PROJECT_NAME $DOCKER_PATH:v2
+            docker push $DOCKER_PATH  
+  
+  rolling-update:
+    docker:         
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip      
+      
+      - run:
+          name: Install dependencies
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            mkdir -p ~/.local/bin
+            mv ./kubectl ~/.local/bin/kubectl
+            export PATH=~/.local/bin:$PATH
+            kubectl version --client
+            pwd
+        
+      - run:
+          name: Deploy cluster
+          command: |
+            pwd
+            ~/.local/bin/kubectl version --client
+            aws eks --region us-east-1 update-kubeconfig --name FinalProjectEKS
+            ~/.local/bin/kubectl get svc
+            ~/.local/bin/kubectl set image deployment/final-project finalproject=phatryo99/finalproject:v2
+            echo "Update result: "
+            ~/.local/bin/kubectl rollout status deployment/final-project
+
   clean-up:
     docker:
       - image: amazon/aws-cli
@@ -131,6 +180,11 @@ jobs:
 workflows:
   default:
     jobs:
-      - deploy-docker
+      - deploy-docker-v1
       - deploy-cluster:
-          requires: [deploy-docker]
+          requires: [deploy-docker-v1]
+      - deploy-docker-v2
+          requires: [deploy-cluster]
+      - rolling-update:
+          type: approval
+          requires: [deploy-docker-v2]

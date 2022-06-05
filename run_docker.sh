@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-docker build --tag=finalproject .
+docker build --tag=finalproject app-v1\.
 
 docker image ls
 
