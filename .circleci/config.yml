@@ -101,7 +101,7 @@ jobs:
             mv ./kubectl ~/.local/bin/kubectl
             export PATH=~/.local/bin:$PATH
             kubectl version --client
-            which kubectl
+            pwd
         
       - run:
           name: Deploy cluster
