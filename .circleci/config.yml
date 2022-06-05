@@ -101,6 +101,7 @@ jobs:
             mv ./kubectl ~/.local/bin/kubectl
             export PATH=~/.local/bin:$PATH
             kubectl version --client
+            which kubectl
         
       - run:
           name: Deploy cluster
@@ -126,6 +127,4 @@ jobs:
 workflows:
   default:
     jobs:
-      - deploy-infrastructure
-      - deploy-cluster:
-          requires: [deploy-infrastructure]
+      - deploy-cluster
