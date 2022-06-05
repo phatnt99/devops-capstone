@@ -130,5 +130,5 @@ workflows:
       - deploy-infrastructure:
           requires: [do-lint]
       - deploy-docker
-      - deploy-cluster
+      - deploy-cluster:
           requires: [deploy-infrastructure, deploy-docker]
