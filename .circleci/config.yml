@@ -178,42 +178,12 @@ jobs:
             aws cloudformation delete-stack --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}"
 
-  info:
-    docker:         
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install tar utility
-          command: |
-            yum install -y tar gzip      
-      
-      - run:
-          name: Install dependencies
-          command: |
-            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x kubectl
-            mkdir -p ~/.local/bin
-            mv ./kubectl ~/.local/bin/kubectl
-            export PATH=~/.local/bin:$PATH
-            kubectl version --client
-            pwd
-        
-      - run:
-          name: Deploy cluster
-          command: |
-            pwd
-            ~/.local/bin/kubectl version --client
-            aws eks --region us-east-1 update-kubeconfig --name FinalProjectEKS
-            ~/.local/bin/kubectl get svc
-            ~/.local/bin/kubectl get deployments
-            ~/.local/bin/kubectl get services
-            ~/.local/bin/kubectl get nodes
-            ~/.local/bin/kubectl get pods  
-
 workflows:
   default:
     jobs:
+      - do-lint
+      - deploy-infrastructure:
+          requires: [do-lint]
       - deploy-docker-v1
       - deploy-cluster:
           requires: [deploy-docker-v1]
@@ -223,4 +193,4 @@ workflows:
           type: approval
           requires: [deploy-docker-v2]     
       - rolling-update:
-          requires: [deploy-docker-v2, continue-rolling]
+          requires: [continue-rolling]

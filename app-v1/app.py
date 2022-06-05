@@ -7,6 +7,8 @@ app = Flask(__name__)
 Log = create_logger(app)
 Log.setLevel(logging.INFO)
 
+lint-fail
+
 @app.route("/")
 def entry():
     Log.info(f"Calling entry page")

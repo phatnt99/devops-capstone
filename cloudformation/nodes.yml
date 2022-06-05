@@ -32,12 +32,12 @@ Parameters:
   DesiredSize:
     Description: DesiredSize
     Type: Number  
-    Default: 2  
+    Default: 3  
 
   MaxSize:
     Description: MaxSize
     Type: Number  
-    Default: 2    
+    Default: 4
 
 Resources:
   NodeRole:
@@ -77,7 +77,7 @@ Resources:
         MinSize: !Ref MinSize
         DesiredSize: !Ref DesiredSize
         MaxSize: !Ref MaxSize
-      ClusterName: FinalProjectEKS
+      ClusterName: !Sub ${EnvironmentName}-EKSCluster
       Subnets: !Split
         - "|"
         - Fn::ImportValue:
