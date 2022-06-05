@@ -67,7 +67,7 @@ Resources:
     Type: AWS::EKS::Nodegroup
     Properties:
       NodegroupName: !Ref NodeGroupName
-      RoleArn: !GetAtt NodeRole.Arn
+      NodeRole: !GetAtt NodeRole.Arn
       AmiType: !Ref AmiTypeName
       CapacityType: !Ref CapacityTypeName
       InstanceTypes: 
@@ -77,7 +77,7 @@ Resources:
         MinSize: !Ref MinSize
         DesiredSize: !Ref DesiredSize
         MaxSize: !Ref MaxSize
-      ClusterName: !Sub ${EnvironmentName}-EKSCluster
+      ClusterName: FinalProjectEKS
       Subnets: !Split
         - "|"
         - Fn::ImportValue:
