@@ -81,7 +81,7 @@ Resources:
       Subnets: !Split
         - "|"
         - Fn::ImportValue:
-          Fn::Sub: ${EnvironmentName}-AvailableSubnets    
+            Fn::Sub: ${EnvironmentName}-AvailableSubnets    
 
 Outputs:
   NodeGroup:

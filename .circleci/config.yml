@@ -126,9 +126,6 @@ jobs:
 workflows:
   default:
     jobs:
-      - do-lint
-      - deploy-infrastructure:
-          requires: [do-lint]
-      - deploy-docker
+      - deploy-infrastructure
       - deploy-cluster:
-          requires: [deploy-infrastructure, deploy-docker]
+          requires: [deploy-infrastructure]
