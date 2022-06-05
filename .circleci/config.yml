@@ -1,0 +1,125 @@
+version: 2
+
+jobs:
+  do-lint:
+    docker:
+      - image: python:3.7.3-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: 
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make install
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            make lint
+
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+        name: Ensure network exists
+        command: |
+          aws cloudformation deploy \
+            --template-file cloudformation/network.yml \
+            --tags project=final \
+            --stack-name "network-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides file://cloudformation/common-params.json \
+            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+            --region us-east-1
+
+      - run:      
+        name: Ensure EKS cluster exists
+        command: |
+          aws cloudformation deploy \
+            --template-file cloudformation/custer.yml \
+            --tags project=final \
+            --stack-name "cluster-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides file://cloudformation/eks-params.json \
+            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+            --region us-east-1
+
+      - run:      
+        name: Ensure EKS node group exists
+        command: |
+          aws cloudformation deploy \
+            --template-file cloudformation/nodes.yml \
+            --tags project=final \
+            --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides file://cloudformation/eks-node.json \
+            --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
+            --region us-east-1            
+
+  deploy-docker:
+    docker:
+      - image: docker:17.05.0-ce-git
+    working_directory: ~/repo  
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build & Push Docker image
+          command: |
+            export DOCKER_PATH=phatryo99/finalproject
+            export PROJECT_NAME=finalproject
+            docker build --tag=$PROJECT_NAME .
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
+            docker tag $PROJECT_NAME $DOCKER_PATH
+            docker push $DOCKER_PATH
+
+  deploy-cluster:
+    docker:         
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip      
+      
+      - run:
+          name: Install dependencies
+          command: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          mkdir -p ~/.local/bin
+          mv ./kubectl ~/.local/bin/kubectl
+          export PATH=~/.local/bin:$PATH
+          kubectl version --client
+          
+      - run:
+          name: Deploy cluster
+          command: |
+            aws eks --region us-east-1 update-kubeconfig --name FinalProjectEKS
+            kubectl get svc
+            kubectl apply -f deployment.yaml
+            kubectl get deployments
+            kubectl get services
+
+workflows:
+  default:
+  jobs:
+    - do-lint
+    # - deploy-infrastructure
+    #     requires: [do-lint]
+    # - deploy-docker
+    # - deploy-cluster
+    #     requires: [deploy-infrastructure, deploy-docker]

@@ -1,0 +1,91 @@
+Description: >
+  CloudFormation for creating EKS Node group
+Parameters:
+  EnvironmentName:
+    Description: Enviroment name
+    Type: String
+
+  NodeGroupName:
+    Description: Node group name
+    Type: String
+
+  AmiTypeName:
+    Description: AmiType name
+    Type: String  
+    Default: AL2_x86_64
+
+  CapacityTypeName:
+    Description: CapacityType name
+    Type: String  
+    Default: ON_DEMAND
+
+  DiskSize:
+    Description: DiskSize
+    Type: Integer  
+    Default: 20    
+
+  MinSize:
+    Description: MinSize
+    Type: Integer  
+    Default: 2  
+
+  DesiredSize:
+    Description: DesiredSize
+    Type: Integer  
+    Default: 2  
+
+  MaxSize:
+    Description: MaxSize
+    Type: Integer  
+    Default: 2    
+
+Resources:
+  NodeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy        
+
+  NodeInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref NodeRole
+
+  NodeGroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      NodegroupName: !Ref NodeGroupName
+      RoleArn: !GetAtt NodeRole.Arn
+      AmiType: !Ref AmiTypeName
+      CapacityType: !Ref CapacityTypeName
+      InstanceTypes: 
+        - "t3.micro"
+      DiskSize: !Ref DiskSize
+      ScalingConfig:
+        MinSize: !Ref MinSize
+        DesiredSize: !Ref DesiredSize
+        MaxSize: !Ref MaxSize
+      ClusterName: !Sub ${EnvironmentName}-EKSCluster
+      Subnets: !Split
+        - "|"
+        - Fn::ImportValue:
+          Fn::Sub: ${EnvironmentName}-AvailableSubnets    
+
+Outputs:
+  NodeGroup:
+    Description: EKS Node group
+    Value: !Ref NodeGroup
+    Export:
+      Name: !Sub ${EnvironmentName}-EKSNodeGroup          
