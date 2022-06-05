@@ -62,8 +62,7 @@ jobs:
               --tags project=final \
               --stack-name "node-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides file://cloudformation/eks-node.json \
-              --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"
-              --region us-east-1            
+              --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM"       
 
   deploy-docker:
     docker:
