@@ -75,9 +75,10 @@ jobs:
       - run:
           name: Build & Push Docker image
           command: |
+            pwd
             export DOCKER_PATH=phatryo99/finalproject
             export PROJECT_NAME=finalproject
-            docker build --tag=$PROJECT_NAME ~/app-v1/.
+            docker build --tag=$PROJECT_NAME app-v1/
             docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
             docker tag $PROJECT_NAME $DOCKER_PATH:v1
             docker push $DOCKER_PATH
@@ -128,7 +129,7 @@ jobs:
           command: |
             export DOCKER_PATH=phatryo99/finalproject
             export PROJECT_NAME=finalproject
-            docker build --tag=$PROJECT_NAME ~/app-v2/.
+            docker build --tag=$PROJECT_NAME app-v2/
             docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}
             docker tag $PROJECT_NAME $DOCKER_PATH:v2
             docker push $DOCKER_PATH  
