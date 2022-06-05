@@ -157,6 +157,7 @@ jobs:
         
       - run:
           name: Deploy cluster
+          no_output_timeout: 30m
           command: |
             pwd
             ~/.local/bin/kubectl version --client
@@ -165,6 +166,7 @@ jobs:
             ~/.local/bin/kubectl set image deployment/final-project finalproject=phatryo99/finalproject:v2
             echo "Update result: "
             ~/.local/bin/kubectl rollout status deployment/final-project
+            ~/.local/bin/kubectl get deployments
 
   clean-up:
     docker:
