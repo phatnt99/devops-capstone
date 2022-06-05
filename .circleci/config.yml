@@ -219,6 +219,8 @@ workflows:
           requires: [deploy-docker-v1]
       - deploy-docker-v2:
           requires: [deploy-cluster]
-      - rolling-update:
+      - continue-rolling:
           type: approval
-          requires: [deploy-docker-v2]
+          requires: [deploy-docker-v2]     
+      - rolling-update:
+          requires: [deploy-docker-v2, continue-rolling]
