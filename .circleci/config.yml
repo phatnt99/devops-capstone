@@ -106,6 +106,8 @@ jobs:
       - run:
           name: Deploy cluster
           command: |
+            pwd
+            ~/.local/bin/kubectl version --client
             aws eks --region us-east-1 update-kubeconfig --name FinalProjectEKS
             kubectl get svc
             kubectl apply -f deployment.yaml
