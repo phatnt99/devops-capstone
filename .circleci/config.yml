@@ -109,10 +109,12 @@ jobs:
             pwd
             ~/.local/bin/kubectl version --client
             aws eks --region us-east-1 update-kubeconfig --name FinalProjectEKS
-            ~/.local/bin/kubectl get svc
-            ~/.local/bin/kubectl apply -f deployment.yaml
+            # ~/.local/bin/kubectl get svc
+            # ~/.local/bin/kubectl apply -f deployment.yaml
             ~/.local/bin/kubectl get deployments
             ~/.local/bin/kubectl get services
+            ~/.local/bin/kubectl get nodes
+            ~/.local/bin/kubectl get pods
 
   clean-up:
     docker:
